@@ -1,15 +1,15 @@
 {
   "tasks": [
     {
-      "text": "learning react-query",
-      "day": "April 7, 2:30pm",
+      "text": "a",
+      "day": "4",
       "reminder": false,
       "id": 1
     },
     {
-      "text": "learning valtio",
-      "day": "April 7, 4:30pm",
-      "reminder": true,
+      "text": "b",
+      "day": "5",
+      "reminder": false,
       "id": 2
     }
   ]
