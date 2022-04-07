@@ -1,0 +1,16 @@
+{
+  "tasks": [
+    {
+      "text": "learning react-query",
+      "day": "April 7, 2:30pm",
+      "reminder": false,
+      "id": 1
+    },
+    {
+      "text": "learning valtio",
+      "day": "April 7, 4:30pm",
+      "reminder": true,
+      "id": 2
+    }
+  ]
+}
