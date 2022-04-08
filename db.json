@@ -15,8 +15,20 @@
     {
       "text": "c",
       "day": "6",
-      "reminder": true,
+      "reminder": false,
       "id": 4
+    },
+    {
+      "text": "a",
+      "day": "4",
+      "reminder": false,
+      "id": 5
+    },
+    {
+      "text": "a",
+      "day": "5",
+      "reminder": false,
+      "id": 6
     }
   ]
 }
