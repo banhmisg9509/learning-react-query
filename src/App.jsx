@@ -1,3 +1,4 @@
+import { useQueryClient } from "react-query";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./App.css";
 import About from "./components/About";
@@ -14,10 +15,13 @@ function App() {
   const { data: tasks, refetch } = useTasks();
   const { mutateAsync: toggleTask } = useToggleTask();
   const { mutateAsync: deleteTask } = useDeleteTask();
+  const queryClient = useQueryClient();
 
   const handleDeleteTask = async (id) => {
     await deleteTask({ id });
-    await refetch();
+    queryClient.setQueryData("tasks", (oldTasks) => {
+      return oldTasks.filter((task) => task.id !== id);
+    });
   };
 
   const toggleReminder = async (id) => {

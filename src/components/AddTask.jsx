@@ -21,8 +21,8 @@ const AddTask = () => {
     }
 
     const task = { text, day, reminder };
-    const newTask = await addTask({ task });
-    queryClient.setQueryData("tasks", (old) => [...old, newTask]);
+    await addTask({ task });
+    queryClient.invalidateQueries("tasks");
 
     setText("");
     setDay("");
