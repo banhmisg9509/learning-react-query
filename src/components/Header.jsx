@@ -1,18 +1,23 @@
 import PropTypes from "prop-types";
 import { useLocation } from "react-router-dom";
+import {
+  toggleShowAddTask,
+  useShowAddTaskState,
+} from "../hooks/useShowAddTaskState";
 import Button from "./Button";
 
-const Header = ({ title, onAdd, showAdd }) => {
+const Header = ({ title }) => {
   const location = useLocation();
+  const { showAddTask } = useShowAddTaskState();
 
   return (
     <header className="header">
       <h1>{title}</h1>
       {location.pathname === "/" && (
         <Button
-          color={showAdd ? "red" : "green"}
-          text={showAdd ? "Close" : "Add"}
-          onClick={onAdd}
+          color={showAddTask ? "red" : "green"}
+          text={showAddTask ? "Close" : "Add"}
+          onClick={() => toggleShowAddTask()}
         />
       )}
     </header>

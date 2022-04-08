@@ -1,107 +1,50 @@
+import { useQueryClient } from "react-query";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./App.css";
-import { useState, useEffect } from "react";
-import Header from "./components/Header";
-import Footer from "./components/Footer.jsx";
-import Tasks from "./components/Tasks";
-import AddTask from "./components/AddTask";
 import About from "./components/About";
+import AddTask from "./components/AddTask";
+import Footer from "./components/Footer.jsx";
+import Header from "./components/Header";
+import Tasks from "./components/Tasks";
 
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useDeleteTask } from "./hooks/useDeleteTask";
+import { useTasks } from "./hooks/useTasks";
+import { useToggleTask } from "./hooks/useToggleTask";
 
 function App() {
-  const [showAddTask, setShowAddTask] = useState(false);
-  const [tasks, setTasks] = useState([]);
+  const { data: tasks, refetch } = useTasks();
+  const { mutateAsync: toggleTask } = useToggleTask();
+  const { mutateAsync: deleteTask } = useDeleteTask();
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const getTasks = async () => {
-      const tasksFromServer = await fetchTasks();
-      setTasks(tasksFromServer);
-    };
-
-    getTasks();
-  }, []);
-
-  // Fetch Tasks
-  const fetchTasks = async () => {
-    const res = await fetch("http://localhost:5000/tasks");
-    const data = await res.json();
-
-    return data;
-  };
-
-  // Fetch Task
-  const fetchTask = async (id) => {
-    const res = await fetch(`http://localhost:5000/tasks/${id}`);
-    const data = await res.json();
-
-    return data;
-  };
-
-  // Add Task
-  const addTask = async (task) => {
-    const res = await fetch("http://localhost:5000/tasks", {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify(task),
+  const handleDeleteTask = async (id) => {
+    await deleteTask({ id });
+    queryClient.setQueryData("tasks", (oldTasks) => {
+      return oldTasks.filter((task) => task.id !== id);
     });
-
-    const data = await res.json();
-
-    setTasks([...tasks, data]);
   };
 
-  // Delete Task
-  const deleteTask = async (id) => {
-    const res = await fetch(`http://localhost:5000/tasks/${id}`, {
-      method: "DELETE",
-    });
-    //We should control the response status to decide if we will change the state or not.
-    res.status === 200
-      ? setTasks(tasks.filter((task) => task.id !== id))
-      : alert("Error Deleting This Task");
-  };
-
-  // Toggle Reminder
   const toggleReminder = async (id) => {
-    const taskToToggle = await fetchTask(id);
-    const updTask = { ...taskToToggle, reminder: !taskToToggle.reminder };
-
-    const res = await fetch(`http://localhost:5000/tasks/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify(updTask),
-    });
-
-    const data = await res.json();
-
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, reminder: data.reminder } : task
-      )
-    );
+    const task = tasks.find((task) => task.id === id);
+    task.reminder = !task.reminder;
+    await toggleTask({ id, task });
+    await refetch();
   };
 
   return (
     <Router>
       <div className="container">
-        <Header
-          onAdd={() => setShowAddTask(!showAddTask)}
-          showAdd={showAddTask}
-        />
+        <Header />
         <Routes>
           <Route
             path="/"
             element={
               <>
-                {showAddTask && <AddTask onAdd={addTask} />}
-                {tasks.length > 0 ? (
+                <AddTask />
+                {tasks?.length > 0 ? (
                   <Tasks
                     tasks={tasks}
-                    onDelete={deleteTask}
+                    onDelete={handleDeleteTask}
                     onToggle={toggleReminder}
                   />
                 ) : (
